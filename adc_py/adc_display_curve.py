@@ -6,15 +6,14 @@ import os
 
 class ADC:
     def __init__(self, x, y):
-        plt.title("ADC Graph", fontsize=16, fontweight='bold')  
-        plt.plot(x, y,"r-") 
+        plt.title("Original Signal Display", fontsize=16, fontweight='bold')  
+        plt.plot(x, y, color='purple') 
         #plt.plot(x, y, marker='o')
         plt.xlabel("t")
         plt.ylabel("amplitude")
         plt.grid(True)
-        plt.show()
 
-def read_wave_file(filepath):
+def adc_display_curve(filepath):
     x = []
     y = []
     try:
@@ -38,10 +37,10 @@ if __name__ == "__main__":
     root.withdraw()  
 
     user_home = os.path.expanduser("~")
-    wave_file = os.path.join(user_home, "AnalogToDigitalConverter","adc.txt") 
+    wave_file = os.path.join(user_home, "AnalogToDigitalConverter","adc_txt","wave.txt") 
 
     if os.path.exists(wave_file):
-        x, y = read_wave_file(wave_file)
+        x, y = adc_display_curve(wave_file)
         if x and y:
             ADC(x, y)
         else:
