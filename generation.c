@@ -32,7 +32,6 @@ void generateWave(int *waveInfo)
     int B = waveInfo[1];
     int f = waveInfo[2];
     int g = 9.81;
-    int i;
     double t;
     double pi = 3.14159265358979323846;
     FILE *file;
@@ -46,7 +45,7 @@ void generateWave(int *waveInfo)
         return;
     }
 
-    for (i = 0; i < 100; i++)
+    for (float i = 0; i < 5; i += 0.01)
     {
         t = (double)i / 100.0;
         double waveValue = A * sin(2 * pi * f * t) + B * cos(2 * pi * g * t);
