@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "generation.h": "c",
+        "math.h": "c"
+    }
+}
