@@ -38,7 +38,7 @@ if __name__ == "__main__":
     root.withdraw()  
 
     user_home = os.path.expanduser("~")
-    wave_file = os.path.join(user_home, "AnalogToDigitalConverter", "adc_txt","adc.txt") 
+    wave_file = os.path.join(user_home, "AnalogToDigitalConverter","adc.txt") 
 
     if os.path.exists(wave_file):
         x, y = read_wave_file(wave_file)
