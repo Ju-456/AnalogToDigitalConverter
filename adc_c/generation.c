@@ -1,4 +1,9 @@
-#include "generation.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define MAX_SIZE 100000
+#define DUREE 10.0 // durée en secondes
 
 int *getWaveInfo()
 {
@@ -13,20 +18,11 @@ int *getWaveInfo()
     scanf("%d", &waveInfo[0]);
     printf("Please enter the second amplitude (B) = ");
     scanf("%d", &waveInfo[1]);
-    printf("Please enter the 1rst frequency = ");
+    printf("Please enter the 1rst frequency (f) = ");
     scanf("%d", &waveInfo[2]);
-    printf("Please enter the 2nd frequency = ");
+    printf("Please enter the 2nd frequency (g) = ");
     scanf("%d", &waveInfo[3]);
     return waveInfo;
-}
-
-void printWaveInfo(int *waveInfo)
-{
-    printf("Wave Info:\n");
-    printf("Amplitude A: %d\n", waveInfo[0]);
-    printf("Amplitude B: %d\n", waveInfo[1]);
-    printf("1rst Frequency: %d\n", waveInfo[2]);
-    printf("2nd Frequency: %d\n", waveInfo[3]);
 }
 
 void generateWave(int *waveInfo)
@@ -36,22 +32,17 @@ void generateWave(int *waveInfo)
     int f = waveInfo[2];
     int g = waveInfo[3];
 
-    double t;
     double pi = 3.14159265358979323846;
-    FILE *file;
-    char time[100];
-    char ampl;
-
-    file = fopen("wave.txt", "w+");
+    FILE *file = fopen("../adc_txt/wave.txt", "w");
     if (file == NULL)
     {
         printf("Error opening file!\n");
         return;
     }
 
-    for (float i = 0; i < 5; i += 0.01)
+    double dt = 0.0001;
+    for (double t = 0; t < DUREE; t += dt)
     {
-        t = (double)i / 100.0;
         double waveValue = A * sin(2 * pi * f * t) + B * cos(2 * pi * g * t);
         fprintf(file, "%lf %lf\n", t, waveValue);
     }
@@ -60,85 +51,105 @@ void generateWave(int *waveInfo)
 
 float bestSamplingRate()
 {
-    FILE *fichier = fopen("wave.txt", "r"); // Ouvre le fichier en lecture
-
-    if (fichier == NULL)
+    FILE *file = fopen("../adc_txt/wave.txt", "r");
+    if (file == NULL)
     {
-        perror("Error opening file!\n");
-        return 1;
+        perror("Error opening file");
+        return -1;
     }
 
-    double time, amplitude;
-    double amplitude_max = -1;
-    double maxTime = 0;
+    double time[MAX_SIZE], amplitude[MAX_SIZE];
+    int n = 0;
 
-    while (fscanf(fichier, "%lf %lf", &time, &amplitude) == 2)
+    while (fscanf(file, "%lf %lf", &time[n], &amplitude[n]) == 2 && n < MAX_SIZE)
     {
-        if (amplitude > amplitude_max)
+        n++;
+    }
+    fclose(file);
+
+    if (n < 3)
+    {
+        printf("Not enough data points to estimate frequency.\n");
+        return -1;
+    }
+
+    double lastPeakTime = 0;
+    double periodSum = 0;
+    int peakCount = 0;
+
+    // Recherche pics locaux (maximum)
+    for (int i = 1; i < n - 1; i++)
+    {
+        if (amplitude[i] > amplitude[i - 1] && amplitude[i] > amplitude[i + 1])
         {
-            amplitude_max = amplitude;
-            maxTime = time;
+            if (lastPeakTime > 0)
+            {
+                periodSum += (time[i] - lastPeakTime);
+                peakCount++;
+            }
+            lastPeakTime = time[i];
         }
     }
 
-    fclose(fichier);
+    if (peakCount == 0)
+    {
+        printf("Pas assez de pics pour estimer la fréquence.\n");
+        return -1;
+    }
 
-    printf("Amplitude max : %.6f at t = %.6f secondes\n", amplitude_max, maxTime);
-    return 1 / (float)amplitude_max;
+    double avgPeriod = periodSum / peakCount;
+    double f_max = 1.0 / avgPeriod;
+
+    double samplingRate = 1 / (2 * f_max); // fréquence d'échantillonnage minimale selon Nyquist
+
+    printf("Fréquence maximale estimée : %.3f Hz\n", f_max);
+    printf("Taux d’échantillonnage minimal selon Nyquist : %.3f Hz\n", samplingRate);
+
+    return (float)samplingRate;
 }
 
-void generateSamplingWave(int *waveInfo, float sampling)
+void generateSamplingWave(int *waveInfo, float samplingInterval)
 {
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
     int g = waveInfo[3];
 
-    double t;
     double pi = 3.14159265358979323846;
-    FILE *file;
-    char time[100];
-    char ampl;
-
-    file = fopen("wave_sampled.txt", "w+");
+    FILE *file = fopen("../adc_txt/wave_sampled.txt", "w");
     if (file == NULL)
     {
         printf("Error opening file!\n");
         return;
     }
 
-    for (float i = 0; i < 5; i += sampling)
+    for (double t = 0; t < DUREE; t += samplingInterval)
     {
-        t = (double)i / 100.0;
         double waveValue = A * sin(2 * pi * f * t) + B * cos(2 * pi * g * t);
         fprintf(file, "%lf %lf\n", t, waveValue);
     }
     fclose(file);
 }
 
-void generateQuantizedWave(int *waveInfo, float sampling)
+void generateQuantizedWave(int *waveInfo, float samplingInterval)
 {
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
     int g = waveInfo[3];
 
-    double t;
     double pi = 3.14159265358979323846;
-    FILE *file;
-
-    file = fopen("wave_quantized.txt", "w+");
+    FILE *file = fopen("../adc_txt/wave_quantized.txt", "w");
     if (file == NULL)
     {
         printf("Error opening file!\n");
         return;
     }
 
-    for (float i = 0; i < 5; i += sampling)
+    for (double t = 0; t < DUREE; t += samplingInterval)
     {
-        t = (double)i / 100.0;
         double waveValue = A * sin(2 * pi * f * t) + B * cos(2 * pi * g * t);
-        fprintf(file, "%lf %lf\n", t, round(waveValue));
+        fprintf(file, "%lf %d\n", t, (int)round(waveValue));
     }
     fclose(file);
 }
@@ -152,40 +163,36 @@ void int_to_binary(int value, int bits, char *out)
     out[bits] = '\0';
 }
 
-void generateQuantizedWaveBinary(int *waveInfo, float sampling)
+void generateQuantizedWaveBinary(int *waveInfo, float samplingInterval)
 {
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
     int g = waveInfo[3];
 
-    double t;
     double pi = 3.14159265358979323846;
-    FILE *binaryFile;
-    FILE *quantizedFile;
-
-    binaryFile = fopen("wave_binary.txt", "w+");
-    quantizedFile = fopen("wave_quantized_binary.txt", "w+");
-    if (binaryFile == NULL)
+    FILE *binaryFile = fopen("../adc_txt/wave_binary.txt", "w");
+    FILE *quantizedFile = fopen("../adc_txt/wave_quantized_binary.txt", "w");
+    if (binaryFile == NULL || quantizedFile == NULL)
     {
         printf("Error opening file!\n");
-        return;
-    }
-    if (quantizedFile == NULL)
-    {
-        printf("Error opening file!\n");
+        if (binaryFile)
+            fclose(binaryFile);
+        if (quantizedFile)
+            fclose(quantizedFile);
         return;
     }
 
-    for (float i = 0; i < 5; i += sampling)
+    for (double t = 0; t < DUREE; t += samplingInterval)
     {
-        t = (double)i / 100.0;
         double waveValue = A * sin(2 * pi * f * t) + B * cos(2 * pi * g * t);
+        int rounded = (int)round(waveValue);
         char binary[17];
-        int_to_binary((int)round(waveValue), 16, binary);
+        int_to_binary(rounded, 16, binary);
         fprintf(quantizedFile, "%lf %s\n", t, binary);
         fprintf(binaryFile, "%s", binary);
     }
+
     fclose(binaryFile);
     fclose(quantizedFile);
 }
