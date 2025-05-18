@@ -3,6 +3,7 @@ import numpy as np
 import os
 import tkinter as tk
 from tkinter import messagebox
+from read_file import read_file
 
 class ADC:
     def __init__(self, x, y):
@@ -13,7 +14,7 @@ class ADC:
         y = np.array(y)
 
         # Plotting
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 3), dpi=100)
         plt.axhline(0, color='black', linewidth=2)
         plt.axvline(0, color='black', linewidth=2)
         plt.xticks([])  # Optional: hide x-axis ticks for clarity
@@ -27,32 +28,26 @@ class ADC:
         plt.title("Sampled Signal Display", fontweight='bold')
         plt.grid(True, linestyle=':')
         plt.tight_layout()
+        # plt.show()
 
 def adc_display_point(filepath):
-    x = []
-    y = []
-    try:
-        with open(filepath, 'r') as f:
-            for line in f:
-                values = line.strip().split()
-                if len(values) != 2:
-                    continue
-                try:
-                    xi, yi = map(float, values)
-                    x.append(xi)
-                    y.append(yi)
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        print(f"Problem when opening file: {filepath}")
+    x, y = read_file(filepath) 
+    # 1/2 values will be displayed to alleging the display
+    x = x[::2]
+    y = y[::2]
+
+    # Conservation of the first 150 points only
+    x = x[:500]
+    y = y[:500]
+
     return x, y
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
 
-    user_home = os.path.expanduser("~")
-    wave_file = os.path.join(user_home, "AnalogToDigitalConverter","adc_txt","wave_sampled.txt") 
+    base_txt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "adc_txt"))
+    wave_file = os.path.join(base_txt_path,"wave_sampled.txt") 
 
     if os.path.exists(wave_file):
         x, y = adc_display_point(wave_file)

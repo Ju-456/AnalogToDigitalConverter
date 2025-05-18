@@ -3,7 +3,7 @@
 #include <math.h>
 
 #define MAX_SIZE 100000
-#define DUREE 10 // durée en secondes
+#define DUREE 1.5 
 
 int *getWaveInfo()
 {
@@ -176,19 +176,27 @@ void generateQuantizedWaveBinary(int *waveInfo, float samplingInterval)
     if (binaryFile == NULL || quantizedFile == NULL)
     {
         printf("Error opening file!\n");
-        if (binaryFile)
-            fclose(binaryFile);
-        if (quantizedFile)
-            fclose(quantizedFile);
+        if (binaryFile) fclose(binaryFile);
+        if (quantizedFile) fclose(quantizedFile);
         return;
     }
 
     for (double t = 0; t < DUREE; t += samplingInterval)
     {
         double waveValue = A * sin(2 * pi * f * t) + B * cos(2 * pi * g * t);
-        int rounded = (int)round(waveValue);
+        
+        // Clamp to signed 16-bit range
+        if (waveValue > 32767) waveValue = 32767;
+        if (waveValue < -32768) waveValue = -32768;
+
+        int signedVal = (int)round(waveValue);
+        unsigned int unsignedVal = (unsigned int)(signedVal + 32768); // Shift to range [0, 65535]
+
+        // Convert to 16-bit binary string
         char binary[17];
-        int_to_binary(rounded, 16, binary);
+        int_to_binary(unsignedVal, 16, binary);
+
+        // Write to files
         fprintf(quantizedFile, "%lf %s\n", t, binary);
         fprintf(binaryFile, "%s", binary);
     }

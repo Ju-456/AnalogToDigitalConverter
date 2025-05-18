@@ -4,63 +4,58 @@ import numpy as np
 import os
 import tkinter as tk
 from tkinter import messagebox
+from read_file import read_file
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import numpy as np
 
 class ADC:
     def __init__(self, x, y):
-        self.display_sampled_signal(x, y)
+        self.fig, self.ax = plt.subplots(figsize=(8, 3), dpi=100)
+        self.display_quantized_signal(x, y)
 
-    def display_sampled_signal(self, x, y):
+    def display_quantized_signal(self, x, y):
         x = np.array(x)
         y = np.array(y)
+        self.ax.set_title("Sampled and Quantized Signal Display", fontsize=16, fontweight='bold')
 
-        fig, ax = plt.subplots(figsize=(10, 6))
-        plt.title("Sampled and Quantized Signal Display", fontsize=16, fontweight='bold')
+        widths = np.diff(x)
+        last_width = widths[-1] if len(widths) > 0 else 1.0
+        widths = np.append(widths, last_width)
 
-        # Calculate spacing and width between samples
-        if len(x) > 1:
-            spacing = min([x2 - x1 for x1, x2 in zip(x[:-1], x[1:])])
-        else:
-            spacing = 1.0
-        width = spacing * 0.4  # Width of each rectangle
+        for xi, yi, w in zip(x, y, widths):
+            rect = Rectangle((xi, 0), w, yi, color='purple', edgecolor='black', alpha=0.6)
+            self.ax.add_patch(rect)
 
-        # Draw rectangle for each (x, y)
-        for xi, yi in zip(x, y):
-            rect = Rectangle((xi - width / 2, 0), width, yi, color='purple', edgecolor='black')
-            ax.add_patch(rect)
-
-        ax.set_xlim(min(x) - spacing, max(x) + spacing)
-        ax.set_ylim(min(0, min(y)), max(y) * 1.1)
-        plt.xlabel("t (time)")
-        plt.ylabel("v (amplitude)")
-        plt.grid(True, linestyle='--', alpha=0.6)
+        self.ax.set_xlim(min(x), max(x) + last_width)
+        self.ax.set_ylim(min(0, min(y)) - 0.1 * abs(min(y)), max(y) + 0.1 * abs(max(y)))
+        self.ax.set_xlabel("t (time)")
+        self.ax.set_ylabel("v (amplitude)")
+        self.ax.grid(True, linestyle='--', alpha=0.6)
         plt.tight_layout()
+        # plt.show()
 
 def adc_display_rectangle(filepath):
-    x = []
-    y = []
-    try:
-        with open(filepath, 'r') as f:
-            for line in f:
-                values = line.strip().split()
-                if len(values) != 2:
-                    continue
-                try:
-                    xi, yi = map(float, values)
-                    x.append(xi)
-                    y.append(yi)
-                except ValueError:
-                    continue
-    except FileNotFoundError:
-        print(f"Problem opening file: {filepath}")
+    from call_all_functions import read_file
+    x, y = read_file(filepath)
+    # # 1/10 values will be displayed to alleging the display
+    x = x[::3]
+    y = y[::3]
+
+    # Conservation of the first 150 points only
+    x = x[:500]
+    y = y[:500]
+
     return x, y
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
 
-    user_home = os.path.expanduser("~")
-    wave_file = os.path.join(user_home, "AnalogToDigitalConverter","adc_txt","wave_quantized.txt") 
-
+    base_txt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "adc_txt"))
+    wave_file = os.path.join(base_txt_path,"wave_quantized.txt") 
+    
     if os.path.exists(wave_file):
         x, y = adc_display_rectangle(wave_file)
         if x and y:

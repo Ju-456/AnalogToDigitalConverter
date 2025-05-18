@@ -5,29 +5,10 @@ import matplotlib.pyplot as plt
 
 # Get the user's home directory and append the adc_py path
 # Import display functions and classes
+from read_file import read_file
 from adc_display_curve import adc_display_curve, ADC as adc_curve
 from adc_display_point import adc_display_point, ADC as adc_point
 from adc_display_rectangle import adc_display_rectangle, ADC as adc_rectangle
-
-# Read x and y data from a text file
-def read_file(filepath):
-    x = []
-    y = []
-    try:
-        with open(filepath, 'r') as f:
-            for line in f:
-                values = line.strip().split()
-                if len(values) != 2:
-                    continue  
-                try:
-                    xi, yi = map(float, values)
-                    x.append(xi)
-                    y.append(yi)
-                except ValueError:
-                    continue  
-    except FileNotFoundError:
-        print(f"Problem when opening file: {filepath}")
-    return x, y
 
 # Automatically close plot after 4 seconds and fix window position
 def auto_close_plot():
@@ -45,11 +26,12 @@ def auto_close_plot():
 def run_all_versions():
 
     # --- Display 1: Raw sampled signal
-    file_curve = os.path.join("../adc_txt/wave.txt")
+    base_txt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "adc_txt"))
+    file_curve = os.path.join(base_txt_path, "wave.txt")
     if os.path.exists(file_curve):
-        x, y = read_file(file_curve)
+        x, y = adc_display_curve(file_curve)
         if x and y:
-            print("Display: Raw sampled signal (no processing)...")
+            print("Display: Raw sampled signal (with filtering)...")
             adc_curve(x, y)
             auto_close_plot()
         else:
@@ -58,11 +40,11 @@ def run_all_versions():
         print(f"File not found: {file_curve}")
 
     # --- Display 2: Sampled signal (points)
-    file_point = os.path.join("../adc_txt/wave_sampled.txt")
+    file_point = os.path.join(base_txt_path, "wave_sampled.txt")
     if os.path.exists(file_point):
-        x, y = read_file(file_point)
+        x, y = adc_display_point(file_point)
         if x and y:
-            print("Display: Sampled signal...")
+            print("Display: Sampled signal (with filtering)...")
             adc_point(x, y)
             auto_close_plot()
         else:
@@ -71,11 +53,11 @@ def run_all_versions():
         print(f"File not found: {file_point}")
 
     # --- Display 3: Sampled + Quantized signal (rectangles)
-    file_rectangle = os.path.join("../adc_txt/wave_quantized.txt")
+    file_rectangle = os.path.join(base_txt_path, "wave_quantized.txt")
     if os.path.exists(file_rectangle):
-        x, y = read_file(file_rectangle)
+        x, y = adc_display_rectangle(file_rectangle)
         if x and y:
-            print("Display: Sampled and quantized signal...")
+            print("Display: Sampled and quantized signal (with filtering)...")
             adc_rectangle(x, y)
             auto_close_plot()
         else:
