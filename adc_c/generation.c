@@ -93,7 +93,7 @@ float bestSamplingRate()
 
     if (peakCount == 0)
     {
-        printf("Pas assez de pics pour estimer la fréquence.\n");
+        printf("Not enough peaks to estimate frequency.\n");
         return -1;
     }
 
@@ -102,8 +102,8 @@ float bestSamplingRate()
 
     double samplingRate = 1 / (2 * f_max); // fréquence d'échantillonnage minimale selon Nyquist
 
-    printf("Fréquence maximale estimée : %.3f Hz\n", f_max);
-    printf("Taux d’échantillonnage minimal selon Nyquist : %.3f Hz\n", samplingRate);
+    printf("Estimated maximum frequency: %.3f Hz n", f_max);
+    printf("Nyquist minimum sampling rate: %.3f Hz n", samplingRate);
 
     return (float)samplingRate;
 }
