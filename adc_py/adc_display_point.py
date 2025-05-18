@@ -25,20 +25,13 @@ class ADC:
 
         plt.xlabel("t (time)")
         plt.ylabel("A (amplitude)")
-        plt.title("Sampled Signal Display", fontweight='bold')
+        plt.title("Sampled Signal Display", fontsize=16, fontweight='bold')
         plt.grid(True, linestyle=':')
         plt.tight_layout()
         # plt.show()
 
 def adc_display_point(filepath):
     x, y = read_file(filepath) 
-    # 1/2 values will be displayed to alleging the display
-    x = x[::2]
-    y = y[::2]
-
-    # Conservation of the first 150 points only
-    x = x[:500]
-    y = y[:500]
 
     return x, y
 

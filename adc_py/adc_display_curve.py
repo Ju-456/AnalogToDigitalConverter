@@ -22,10 +22,6 @@ def moving_average(y, window_size=5):
 
 def adc_display_curve(filepath):
     x, y = read_file(filepath)
-    # Conservation of the first 500 points only
-    x = x[:500]
-    y = y[:500]
-
     return x, y
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ class ADC:
         widths = np.append(widths, last_width)
 
         for xi, yi, w in zip(x, y, widths):
-            rect = Rectangle((xi, 0), w, yi, color='purple', edgecolor='black', alpha=0.6)
+            rect = Rectangle((xi, 0), w, yi, facecolor='purple', edgecolor='black', alpha=0.6)
             self.ax.add_patch(rect)
 
         self.ax.set_xlim(min(x), max(x) + last_width)
@@ -39,13 +39,6 @@ class ADC:
 def adc_display_rectangle(filepath):
     from call_all_functions import read_file
     x, y = read_file(filepath)
-    # # 1/10 values will be displayed to alleging the display
-    x = x[::3]
-    y = y[::3]
-
-    # Conservation of the first 150 points only
-    x = x[:500]
-    y = y[:500]
 
     return x, y
 
