@@ -3,7 +3,7 @@
 #include <math.h>
 
 #define MAX_SIZE 100000
-#define DUREE 10.0 // durée en secondes
+#define DUREE 1.0 // durée en secondes
 
 int *getWaveInfo()
 {

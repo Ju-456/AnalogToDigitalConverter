@@ -4,10 +4,6 @@ import sys
 import matplotlib.pyplot as plt
 
 # Get the user's home directory and append the adc_py path
-user_home = os.path.expanduser("~")
-adc_py_path = os.path.join(user_home, "AnalogToDigitalConverter", "adc_py")
-sys.path.append(adc_py_path)
-
 # Import display functions and classes
 from adc_display_curve import adc_display_curve, ADC as adc_curve
 from adc_display_point import adc_display_point, ADC as adc_point
@@ -47,10 +43,9 @@ def auto_close_plot():
 
 # Main function to run all display modes
 def run_all_versions():
-    base_txt_path = os.path.join(user_home, "AnalogToDigitalConverter", "adc_txt")
 
     # --- Display 1: Raw sampled signal
-    file_curve = os.path.join(base_txt_path, "wave.txt")
+    file_curve = os.path.join("../adc_txt/wave.txt")
     if os.path.exists(file_curve):
         x, y = read_file(file_curve)
         if x and y:
@@ -63,7 +58,7 @@ def run_all_versions():
         print(f"File not found: {file_curve}")
 
     # --- Display 2: Sampled signal (points)
-    file_point = os.path.join(base_txt_path, "wave_sampled.txt")
+    file_point = os.path.join("../adc_txt/wave_sampled.txt")
     if os.path.exists(file_point):
         x, y = read_file(file_point)
         if x and y:
@@ -76,7 +71,7 @@ def run_all_versions():
         print(f"File not found: {file_point}")
 
     # --- Display 3: Sampled + Quantized signal (rectangles)
-    file_rectangle = os.path.join(base_txt_path, "wave_quantized.txt")
+    file_rectangle = os.path.join("../adc_txt/wave_quantized.txt")
     if os.path.exists(file_rectangle):
         x, y = read_file(file_rectangle)
         if x and y:
