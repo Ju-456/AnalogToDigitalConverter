@@ -33,7 +33,7 @@ def read_file(filepath):
         print(f"Problem when opening file: {filepath}")
     return x, y
 
-# Automatically close plot after 2 seconds and fix window position
+# Automatically close plot after 4 seconds and fix window position
 def auto_close_plot():
     manager = plt.get_current_fig_manager()
     try:
@@ -42,7 +42,7 @@ def auto_close_plot():
     except AttributeError:
         pass  
     plt.show(block=False)
-    plt.pause(2)
+    plt.pause(4)
     plt.close()
 
 # Main function to run all display modes
