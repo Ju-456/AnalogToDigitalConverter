@@ -2,7 +2,7 @@
 
 int *getWaveInfo()
 {
-    int *waveInfo = (int *)malloc(3 * sizeof(int));
+    int *waveInfo = (int *)malloc(4 * sizeof(int));
     if (waveInfo == NULL)
     {
         printf("Memory allocation failed\n");
@@ -13,8 +13,10 @@ int *getWaveInfo()
     scanf("%d", &waveInfo[0]);
     printf("Please enter the second amplitude (B) = ");
     scanf("%d", &waveInfo[1]);
-    printf("Please enter the frequency = ");
+    printf("Please enter the 1rst frequency = ");
     scanf("%d", &waveInfo[2]);
+    printf("Please enter the 2nd frequency = ");
+    scanf("%d", &waveInfo[3]);
     return waveInfo;
 }
 
@@ -23,7 +25,8 @@ void printWaveInfo(int *waveInfo)
     printf("Wave Info:\n");
     printf("Amplitude A: %d\n", waveInfo[0]);
     printf("Amplitude B: %d\n", waveInfo[1]);
-    printf("Frequency: %d\n", waveInfo[2]);
+    printf("1rst Frequency: %d\n", waveInfo[2]);
+    printf("2nd Frequency: %d\n", waveInfo[3]);
 }
 
 void generateWave(int *waveInfo)
@@ -31,7 +34,8 @@ void generateWave(int *waveInfo)
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
-    int g = 9.81;
+    int g = waveInfo[3];
+
     double t;
     double pi = 3.14159265358979323846;
     FILE *file;
@@ -88,7 +92,8 @@ void generateSamplingWave(int *waveInfo, float sampling)
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
-    int g = 9.81;
+    int g = waveInfo[3];
+
     double t;
     double pi = 3.14159265358979323846;
     FILE *file;
@@ -116,7 +121,8 @@ void generateQuantizedWave(int *waveInfo, float sampling)
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
-    int g = 9.81;
+    int g = waveInfo[3];
+
     double t;
     double pi = 3.14159265358979323846;
     FILE *file;
@@ -151,7 +157,8 @@ void generateQuantizedWaveBinary(int *waveInfo, float sampling)
     int A = waveInfo[0];
     int B = waveInfo[1];
     int f = waveInfo[2];
-    int g = 9.81;
+    int g = waveInfo[3];
+
     double t;
     double pi = 3.14159265358979323846;
     FILE *binaryFile;
