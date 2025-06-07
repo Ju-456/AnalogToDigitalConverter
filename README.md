@@ -10,8 +10,8 @@ This project demonstrates a practical implementation of signal digitization — 
 ```
 AnalogToDigitalConverter/
 ├── adc_c/
-│   ├── generation.c                # Signal generation and processing
-│   ├── generation.h                # Function declarations
+│   ├── generation.c               # Signal generation and processing
+│   ├── generation.h               # Function declarations
 │   └── main.c                     # Main execution logic
 │
 ├── adc_py/
@@ -23,7 +23,9 @@ AnalogToDigitalConverter/
 ├── adc_txt/
 │   ├── wave.txt                   # Original analog signal data
 │   ├── wave_sampled.txt           # Sampled data
-│   └── wave_quantized.txt         # Quantized data
+│   ├── wave_quantized.txt         # Quantized data
+│   ├── wave_binary.txt            # Used in input to display the next function (values in decimals)
+│   └── wave_quantized_binary.txt  # Quantized data in binary
 ```
 
 ---
