@@ -3,9 +3,11 @@ import numpy as np
 import os
 import tkinter as tk
 from tkinter import messagebox
-from read_file import read_file
 
-class ADC:
+from utils import read_file
+from utils import adc_display
+
+class adc_point:
     def __init__(self, x, y):
         self.display_signal(x, y)
 
@@ -30,11 +32,6 @@ class ADC:
         plt.tight_layout()
         # plt.show()
 
-def adc_display_point(filepath):
-    x, y = read_file(filepath) 
-
-    return x, y
-
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
@@ -43,9 +40,9 @@ if __name__ == "__main__":
     wave_file = os.path.join(base_txt_path,"wave_sampled.txt") 
 
     if os.path.exists(wave_file):
-        x, y = adc_display_point(wave_file)
+        x, y = adc_display(wave_file)
         if x and y:
-            ADC(x, y)
+            adc_point(x, y)
         else:
             messagebox.showerror("Error", "Unable to read values from the file.")
     else:

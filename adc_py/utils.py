@@ -17,3 +17,7 @@ def read_file(filepath):
     except FileNotFoundError:
         print(f"Problem when opening file: {filepath}")
     return x, y
+
+def adc_display(filepath):
+    x, y = read_file(filepath)
+    return x, y

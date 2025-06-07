@@ -4,13 +4,15 @@ import numpy as np
 import os
 import tkinter as tk
 from tkinter import messagebox
-from read_file import read_file
+
+from utils import read_file
+from utils import adc_display
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
 
-class ADC:
+class adc_rectangle:
     def __init__(self, x, y):
         self.fig, self.ax = plt.subplots(figsize=(8, 3), dpi=100)
         self.display_quantized_signal(x, y)
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     if os.path.exists(wave_file):
         x, y = adc_display_rectangle(wave_file)
         if x and y:
-            ADC(x, y)
+            adc_rectangle(x, y)
         else:
             messagebox.showerror("Error", "Failed to read valid x and y values.")
     else:
